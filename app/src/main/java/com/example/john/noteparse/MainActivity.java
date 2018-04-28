@@ -4,20 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.john.textparse.R;
+import com.example.john.noteparse.R;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
@@ -30,8 +35,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button load = findViewById(R.id.button);
+        Button load = findViewById(R.id.btn_load);
+        Button highlight = findViewById(R.id.btn_highlight);
 
+        highlight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableStringBuilder str = (SpannableStringBuilder) et.getText();
+
+
+                int start = et.getSelectionStart();
+                int end = et.getSelectionEnd();
+
+                str.setSpan(new BackgroundColorSpan(Color.YELLOW),start,end,0);
+                et.setText(str);
+            }
+        });
 
     }
     public void loadImagefromGallery(View view) {
@@ -41,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         // Start the Intent
         startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -67,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
                   SparseArray<TextBlock> textBlocks = textDetector.detect(frame);
                   String s = textBlocks.get(0).getValue();
                   //creating a testview to show the test
-                  TextView tv = (TextView) findViewById(R.id.textView);
-                  tv.setText(s);
+                  EditText et = (EditText) findViewById(R.id.textView);
+                  et.setText(s);
               }catch (Exception e){
                   Toast.makeText(this, "Text Detector Failed to Detect Text", Toast.LENGTH_LONG)
                           .show();
