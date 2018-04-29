@@ -1,5 +1,7 @@
 package com.example.john.noteparse;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,7 +24,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.john.noteparse.R;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
@@ -37,6 +38,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button load = findViewById(R.id.btn_load);
         Button highlight = findViewById(R.id.btn_highlight);
+        Button copyText = findViewById(R.id.btn_copy);
+
+
+
+        copyText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+
+                EditText et = (EditText) findViewById(R.id.textView);
+
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText(text, et);
+                clipboard.setPrimaryClip(clip);
+            }
+        });
 
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
