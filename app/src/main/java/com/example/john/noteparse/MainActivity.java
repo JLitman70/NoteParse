@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMG = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button load = findViewById(R.id.btn_load);
@@ -51,6 +52,15 @@ public class MainActivity extends AppCompatActivity {
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
         Button save = findViewById(R.id.btn_save);
+        Button web = findViewById(R.id.btn_web);
+
+        web.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, WebViewActivity.class);
+                startActivity(intent);
+            }
+        });
 
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
