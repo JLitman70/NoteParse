@@ -12,8 +12,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
@@ -34,6 +36,8 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import static android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
+
 public class MainActivity extends AppCompatActivity {
     String back_s;
     ArrayList<ViewSpan> spans = new ArrayList<>();
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
-                SpannableStringBuilder str = (SpannableStringBuilder) et.getText();
+                SpannableString str = new SpannableString(et.getText());
 
 
                 int start = et.getSelectionStart();
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         .show();
 
                 str.setSpan(new BackgroundColorSpan(Color.YELLOW),start,end,0);
-                et.setText(str);
+                et.setText(str, TextView.BufferType.SPANNABLE);
 
 
             }
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
-                SpannableStringBuilder str = (SpannableStringBuilder) et.getText();
+                SpannableString str = new SpannableString(et.getText());
 
 
                 int start = et.getSelectionStart();
@@ -90,14 +94,14 @@ public class MainActivity extends AppCompatActivity {
                         .show();
                 str.setSpan(new StyleSpan(Typeface.BOLD),start,end,0);
 
-                et.setText(str);
+                et.setText(str, TextView.BufferType.SPANNABLE);
             }
         });
         italic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
-                SpannableStringBuilder str = (SpannableStringBuilder) et.getText();
+                SpannableString str = new SpannableString(et.getText());
 
 
                 int start = et.getSelectionStart();
@@ -112,12 +116,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), start+" "+end + " "+'i', Toast.LENGTH_LONG)
                         .show();
                 str.setSpan(new StyleSpan(Typeface.ITALIC),start,end,0);
-                et.setText(str);
+                et.setText(str, TextView.BufferType.SPANNABLE);
             }
         });
 
         /*
         * This needs some adjusting to get the first bit to copy
+        * 
         * */
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,11 +140,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 EditText et = (EditText) findViewById(R.id.textView);
-                String rough = et.getText().toString();
-                StringBuilder saveable = new StringBuilder();
-                ViewSpan temp = new ViewSpan();
-                ArrayList<ViewSpan> vs = new ArrayList<>();
-                saveable.append("");
+                SpannableString rough =new SpannableString(et.getText());
+
+                
+                // saveable = new StringBuilder();
+                //ViewSpan temp = new ViewSpan();
+               //ArrayList<ViewSpan> vs = new ArrayList<>();
+                //saveable.append("");
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                et.setText(htmlString, TextView.BufferType.SPANNABLE);
+        /*
                 if(spans.size()==0){
                     et.setText(rough);
                 }else{
@@ -148,13 +158,14 @@ public class MainActivity extends AppCompatActivity {
                     if(spans.get(0).start != 0) {
                         temp.type = 'n';
                         temp.start = 0;
-                        temp.end = spans.get(0).start-1;
-                        vs.add(temp);
+                        temp.end = spans.get(0).start-2;
+                        spans.add(temp);
+                        spans.sort(c);
                     }
 
                     for (int i = 0; i < spans.size() - 1; i++) {
                         temp.start = spans.get(i).end + 1;
-                        temp.end = spans.get(i + 1).start-1;
+                        temp.end = spans.get(i + 1).start-2;
                         temp.type='n';
                         vs.add(temp);
 
@@ -177,8 +188,10 @@ public class MainActivity extends AppCompatActivity {
                             saveable.append("<"+spans.get(i).type+">"+rough.substring(spans.get(i).start,spans.get(i).end)+"</"+spans.get(i).type+">");
                         }
                     }
+
                     et.setText(saveable.toString());
                 }
+                */
             }
         });
 
