@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.View;
@@ -29,7 +31,12 @@ import com.google.android.gms.vision.text.TextRecognizer;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 public class MainActivity extends AppCompatActivity {
+    String back_s;
+    ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button load = findViewById(R.id.btn_load);
         Button highlight = findViewById(R.id.btn_highlight);
+        Button bold = findViewById(R.id.btn_bold);
+        Button italic = findViewById(R.id.btn_italic);
+        Button save = findViewById(R.id.btn_save);
 
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,10 +58,130 @@ public class MainActivity extends AppCompatActivity {
                 int start = et.getSelectionStart();
                 int end = et.getSelectionEnd();
 
+                ViewSpan span = new ViewSpan();
+                span.start=start;
+                span.end = end;
+                span.type = 'h';
+                spans.add(span);
+                Toast.makeText(getApplicationContext(), start+" "+end + " "+'h', Toast.LENGTH_LONG)
+                        .show();
+
                 str.setSpan(new BackgroundColorSpan(Color.YELLOW),start,end,0);
+                et.setText(str);
+
+
+            }
+        });
+        bold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableStringBuilder str = (SpannableStringBuilder) et.getText();
+
+
+                int start = et.getSelectionStart();
+                int end = et.getSelectionEnd();
+                ViewSpan span = new ViewSpan();
+                span.start=start;
+                span.end = end;
+                span.type ='b';
+                spans.add(span);
+                Toast.makeText(getApplicationContext(), start+" "+end + " "+'b', Toast.LENGTH_LONG)
+                        .show();
+                str.setSpan(new StyleSpan(Typeface.BOLD),start,end,0);
+
                 et.setText(str);
             }
         });
+        italic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableStringBuilder str = (SpannableStringBuilder) et.getText();
+
+
+                int start = et.getSelectionStart();
+                int end = et.getSelectionEnd();
+
+
+                ViewSpan span = new ViewSpan();
+                span.start=start;
+                span.end = end;
+                span.type ='i';
+                spans.add(span);
+                Toast.makeText(getApplicationContext(), start+" "+end + " "+'i', Toast.LENGTH_LONG)
+                        .show();
+                str.setSpan(new StyleSpan(Typeface.ITALIC),start,end,0);
+                et.setText(str);
+            }
+        });
+
+        /*
+        * This needs some adjusting to get the first bit to copy
+        * */
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Comparator<ViewSpan> c = new Comparator<ViewSpan>() {
+                    @Override
+                    public int compare(ViewSpan item, ViewSpan t1) {
+                        if(item.start == t1.start){
+                            return 0;
+                        }else if(item.start > t1.start){
+                            return 1;
+                        }else {
+                            return -1;
+                        }
+                    }
+                };
+                EditText et = (EditText) findViewById(R.id.textView);
+                String rough = et.getText().toString();
+                StringBuilder saveable = new StringBuilder();
+                ViewSpan temp = new ViewSpan();
+                ArrayList<ViewSpan> vs = new ArrayList<>();
+                saveable.append("");
+                if(spans.size()==0){
+                    et.setText(rough);
+                }else{
+                    spans.sort(c);
+
+                    if(spans.get(0).start != 0) {
+                        temp.type = 'n';
+                        temp.start = 0;
+                        temp.end = spans.get(0).start-1;
+                        vs.add(temp);
+                    }
+
+                    for (int i = 0; i < spans.size() - 1; i++) {
+                        temp.start = spans.get(i).end + 1;
+                        temp.end = spans.get(i + 1).start-1;
+                        temp.type='n';
+                        vs.add(temp);
+
+                    }
+
+                    if(spans.get(spans.size()-1).end != rough.length()) {
+                        temp.type = 'n';
+                        temp.start = spans.get(spans.size()-1).end+1;
+                        temp.end = rough.length();
+                        vs.add(temp);
+                    }
+                    spans.addAll(vs);
+                    spans.sort(c);
+                    //now to copy words and whatnot
+
+                    for(int i =0;i<spans.size()-1;i++){
+                        if(spans.get(i).type == 'n'){
+                            saveable.append(rough.substring(spans.get(i).start,spans.get(i).end));
+                        }else {
+                            saveable.append("<"+spans.get(i).type+">"+rough.substring(spans.get(i).start,spans.get(i).end)+"</"+spans.get(i).type+">");
+                        }
+                    }
+                    et.setText(saveable.toString());
+                }
+            }
+        });
+
 
     }
     public void loadImagefromGallery(View view) {
@@ -87,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
               try {
                   SparseArray<TextBlock> textBlocks = textDetector.detect(frame);
                   String s = textBlocks.get(0).getValue();
+                  back_s = s;
                   //creating a testview to show the test
                   EditText et = (EditText) findViewById(R.id.textView);
                   et.setText(s);
