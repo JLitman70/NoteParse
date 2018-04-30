@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 SpannableString rough =new SpannableString(et.getText());
                 String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
                 HTML = "<html><body>"+htmlString+"</body></html>";
-                Intent intent = new Intent(context, WebViewActivity.class);
+                Intent intent = new Intent(context, Web.class);
                 intent.putExtra("HTML",HTML);
                 startActivity(intent);
             }
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 SpannableString rough =new SpannableString(et.getText());
                 String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
                 HTML = "<html><body>"+htmlString+"</body></html>";
-                et.setText(HTML);
+                //et.setText(HTML);
 
 
 
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 //saveable.append("");
                 final String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
                 et.setText(htmlString, TextView.BufferType.SPANNABLE);
-
+*/
                 AlertDialog.Builder fileDialog = new AlertDialog.Builder(MainActivity.this);
                 View dialogView = getLayoutInflater().inflate(R.layout.filename_layout, null);
                 fileDialog.setView(dialogView);
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         String fileName = shortFileName + ".html";
-                        saveFile(fileName,htmlString);
+                        saveFile(fileName,HTML);
 
                     }
                 });
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onCancel(DialogInterface dialogInterface) {
                                 shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
                                 String fileName = shortFileName + ".html";
-                                saveFile(fileName,htmlString);
+                                saveFile(fileName,HTML);
 
                             }
                         });
