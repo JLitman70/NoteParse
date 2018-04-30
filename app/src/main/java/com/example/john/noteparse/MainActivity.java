@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,13 +45,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Scanner;
 
 import static android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
 
 public class MainActivity extends AppCompatActivity {
-    String back_s;
+    String HTML;
     ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     private String shortFileName = "";
@@ -66,19 +69,22 @@ public class MainActivity extends AppCompatActivity {
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
         Button save = findViewById(R.id.btn_save);
-        //Button web = findViewById(R.id.btn_web);
+        Button web = findViewById(R.id.btn_web);
 
 
-
-        /*
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough =new SpannableString(et.getText());
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                HTML = "<html><body>"+htmlString+"</body></html>";
                 Intent intent = new Intent(context, WebViewActivity.class);
+                intent.putExtra("HTML",HTML);
                 startActivity(intent);
             }
         });
-        */
+
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,7 +160,17 @@ public class MainActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Comparator<ViewSpan> c = new Comparator<ViewSpan>() {
+
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough =new SpannableString(et.getText());
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                HTML = "<html><body>"+htmlString+"</body></html>";
+                et.setText(HTML);
+
+
+
+        /*
+        Comparator<ViewSpan> c = new Comparator<ViewSpan>() {
                     @Override
                     public int compare(ViewSpan item, ViewSpan t1) {
                         if(item.start == t1.start){
@@ -302,7 +318,6 @@ public class MainActivity extends AppCompatActivity {
               try {
                   SparseArray<TextBlock> textBlocks = textDetector.detect(frame);
                   String s = textBlocks.get(0).getValue();
-                  back_s = s;
                   //creating a testview to show the test
                   EditText et = (EditText) findViewById(R.id.textView);
                   et.setText(s);
@@ -330,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(path, HTMLfileName);
 
         Log.i("filename", path + HTMLfileName);
-        Log.i("perm", String.valueOf(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)));
+
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.i("working", "we are into permission check");
             try {
