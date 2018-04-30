@@ -29,9 +29,15 @@ import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +56,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Scanner;
 
@@ -60,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     private String shortFileName = "";
-    private String path;
+    private String path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         String fileName = shortFileName + ".html";
-                         path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
                         saveFile(fileName, HTML, path);
 
                     }
@@ -228,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onCancel(DialogInterface dialogInterface) {
                         shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
                         String fileName = shortFileName + ".html";
-                         path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
                         saveFile(fileName, HTML, path);
 
                     }
@@ -366,6 +371,40 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        {
+            //statements seem to be working, highscore is untested'ish' because i did not want to mess with the layout (as it appears blank)
+            if(item.getItemId()== R.id.Load_File){
+                File fileDirectory = new File(path);
+                String[] listFiles = fileDirectory.list();
+                Arrays.sort(listFiles);
+
+                AlertDialog.Builder loadDialog = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                View loadView = (View)  inflater.inflate(R.layout.dialog_list, null);
+                loadDialog.setView(loadView);
+                loadDialog.setTitle("Files:");
+                ListView listView = (ListView)loadView.findViewById(R.id.listView);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listFiles);
+                listView.setAdapter(adapter);
+
+                loadDialog.create();
+                loadDialog.show();
+
+
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
