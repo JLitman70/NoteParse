@@ -66,29 +66,37 @@
             android:id="@+id/fab_highlight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/oval"
             android:onClick="loadImagefromGallery"
-            android:src="@drawable/ic_insert_photo_white_24dp"
+            android:src="@drawable/fab_add"
             fab:fab_label="Highlight"
-            fab:fab_size="normal"
+            fab:fab_size="mini"
             tools:layout_editor_absoluteX="7dp"
             tools:layout_editor_absoluteY="78dp" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_parse"
+            android:id="@+id/fab_italic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/oval"
-            android:src="@drawable/ic_brush_white_24dp"
-            fab:fab_label="Width Size"
-            fab:fab_size="normal"
+            android:src="@drawable/fab_one"
+            fab:fab_label="Italicize"
+            fab:fab_size="mini"
+            tools:layout_editor_absoluteX="7dp"
+            tools:layout_editor_absoluteY="148dp" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fab_one"
+            fab:fab_label="Bold"
+            fab:fab_size="mini"
             tools:layout_editor_absoluteX="7dp"
             tools:layout_editor_absoluteY="148dp" />
 
     </com.github.clans.fab.FloatingActionMenu>
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fam_save"
+        android:id="@+id/fam_load"
         android:layout_width="73dp"
         android:layout_height="279dp"
         android:layout_gravity="bottom|right"
@@ -110,7 +118,7 @@
         fab:menu_colorNormal="#da3c2f"
         fab:menu_colorPressed="#dc4b3f"
         fab:menu_colorRipple="#99d4d4d4"
-        fab:menu_fab_label="Cancel"
+        fab:menu_fab_label="Load"
         fab:menu_fab_size="normal"
         fab:menu_icon="@drawable/fab_add"
         fab:menu_labels_colorNormal="#333"
@@ -131,32 +139,30 @@
         tools:ignore="RtlHardcoded">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_web"
+            android:id="@+id/fab_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/oval"
             android:onClick="loadImagefromGallery"
-            android:src="@drawable/ic_insert_photo_white_24dp"
-            fab:fab_label="Load Image"
-            fab:fab_size="normal"
+            android:src="@drawable/fab_one"
+            fab:fab_label="Camera"
+            fab:fab_size="mini"
             tools:layout_editor_absoluteX="7dp"
             tools:layout_editor_absoluteY="78dp" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_save"
+            android:id="@+id/fab_gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/oval"
-            android:src="@drawable/ic_brush_white_24dp"
-            fab:fab_label="Width Size"
-            fab:fab_size="normal"
+            android:src="@drawable/fab_one"
+            fab:fab_label="Gallery"
+            fab:fab_size="mini"
             tools:layout_editor_absoluteX="7dp"
             tools:layout_editor_absoluteY="148dp" />
 
     </com.github.clans.fab.FloatingActionMenu>
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fam_pic"
+        android:id="@+id/fam_save"
         android:layout_width="73dp"
         android:layout_height="279dp"
         android:layout_gravity="bottom|right"
@@ -169,8 +175,6 @@
         fab:layout_constraintHorizontal_bias="0.972"
         fab:layout_constraintStart_toStartOf="parent"
         fab:layout_constraintTop_toTopOf="parent"
-        fab:layout_constraintVertical_bias="0.888"
-        fab:layout_constraintVertical_bias="0.83"
         fab:menu_animationDelayPerItem="55"
         fab:menu_backgroundColor="@android:color/transparent"
         fab:menu_buttonSpacing="0dp"
@@ -201,22 +205,20 @@
             android:id="@+id/fab_web"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/oval"
             android:onClick="loadImagefromGallery"
-            android:src="@drawable/ic_insert_photo_white_24dp"
-            fab:fab_label="Load Image"
-            fab:fab_size="normal"
+            android:src="@drawable/fab_add"
+            fab:fab_label="HTML"
+            fab:fab_size="mini"
             tools:layout_editor_absoluteX="7dp"
             tools:layout_editor_absoluteY="78dp" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_load"
+            android:id="@+id/fab_save_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/oval"
-            android:src="@drawable/ic_brush_white_24dp"
-            fab:fab_label="Width Size"
-            fab:fab_size="normal"
+            android:src="@drawable/fab_one"
+            fab:fab_label="Save Text"
+            fab:fab_size="mini"
             tools:layout_editor_absoluteX="7dp"
             tools:layout_editor_absoluteY="148dp" />
 
