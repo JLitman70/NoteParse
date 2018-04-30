@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         Button italic = findViewById(R.id.btn_italic);
         Button save = findViewById(R.id.btn_save);
         //Button web = findViewById(R.id.btn_web);
+
+
 
         /*
         web.setOnClickListener(new View.OnClickListener() {
@@ -327,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(path, HTMLfileName);
 
         Log.i("filename", path + HTMLfileName);
-
+        Log.i("perm", String.valueOf(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)));
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.i("working", "we are into permission check");
             try {
