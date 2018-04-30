@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,12 +49,15 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import com.example.john.noteparse.R;
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -393,9 +397,29 @@ public class MainActivity extends AppCompatActivity {
                 loadDialog.setView(loadView);
                 loadDialog.setTitle("Files:");
                 ListView listView = (ListView)loadView.findViewById(R.id.listView);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listFiles);
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listFiles);
                 listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String selected = adapter.getItem(position);
 
+                        try {
+                            File fl = new File(path+"/"+selected);
+                            FileInputStream fin = new FileInputStream(fl);
+                            String ret = convertStreamToString(fin);
+                            //Make sure you close all streams.
+                            fin.close();
+                            Intent intent = new Intent(getApplicationContext(), Web.class);
+                            intent.putExtra("HTML", ret);
+                            startActivity(intent);
+                           
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
                 loadDialog.create();
                 loadDialog.show();
 
@@ -418,5 +442,25 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 }
