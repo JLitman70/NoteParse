@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     private String shortFileName = "";
+    private String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,7 +217,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         String fileName = shortFileName + ".html";
-                        saveFile(fileName, HTML);
+                         path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
+                        saveFile(fileName, HTML, path);
 
                     }
                 });
@@ -226,7 +228,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onCancel(DialogInterface dialogInterface) {
                         shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
                         String fileName = shortFileName + ".html";
-                        saveFile(fileName, HTML);
+                         path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
+                        saveFile(fileName, HTML, path);
 
                     }
                 });
@@ -335,16 +338,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void saveFile(String HTMLfileName, String HTMLContentString) {
+    public void saveFile(String HTMLfileName, String HTMLContentString, String PathName) {
 
-        String path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
-        File file = new File(path, HTMLfileName);
-        Log.i("filename", path + HTMLfileName);
 
+        File file = new File(PathName, HTMLfileName);
+        Log.i("filename", PathName + HTMLfileName);
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.i("working", "we are into permission check");
-            File directory = new File(path);
+            File directory = new File(PathName);
             if (! directory.exists()){
                 directory.mkdirs();
             }
