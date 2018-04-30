@@ -7,11 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -21,12 +18,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.format.DateFormat;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -41,34 +35,23 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
-import com.example.john.noteparse.R;
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Scanner;
 
 import static android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
 
 public class MainActivity extends AppCompatActivity {
     String HTML;
-    ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     private String shortFileName = "";
     private String path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
@@ -78,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button load = findViewById(R.id.btn_load);
         Button highlight = findViewById(R.id.btn_highlight);
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
@@ -87,7 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 
-
+        /*
+        * Creates the on click listener that converts the current text to html and opens it into a
+        * web browser.
+        * */
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,112 +85,63 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        /*
+        * Highlights the currently selected text and saves it to a spannable string
+        * */
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
                 SpannableString str = new SpannableString(et.getText());
-
-
                 int start = et.getSelectionStart();
                 int end = et.getSelectionEnd();
-
-                ViewSpan span = new ViewSpan();
-                span.start = start;
-                span.end = end;
-                span.type = 'h';
-                spans.add(span);
-                Toast.makeText(getApplicationContext(), start + " " + end + " " + 'h', Toast.LENGTH_LONG).show();
-
                 str.setSpan(new BackgroundColorSpan(Color.YELLOW), start, end, 0);
                 et.setText(str, TextView.BufferType.SPANNABLE);
 
 
             }
         });
+        /*
+        * emboldens the selected text
+        * */
         bold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
                 SpannableString str = new SpannableString(et.getText());
-
-
                 int start = et.getSelectionStart();
                 int end = et.getSelectionEnd();
-                ViewSpan span = new ViewSpan();
-                span.start = start;
-                span.end = end;
-                span.type = 'b';
-                spans.add(span);
-                Toast.makeText(getApplicationContext(), start + " " + end + " " + 'b', Toast.LENGTH_LONG).show();
                 str.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
-
                 et.setText(str, TextView.BufferType.SPANNABLE);
             }
         });
+        /*
+        * italicizes the selected text
+        * */
         italic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
                 SpannableString str = new SpannableString(et.getText());
-
-
                 int start = et.getSelectionStart();
                 int end = et.getSelectionEnd();
-
-
-                ViewSpan span = new ViewSpan();
-                span.start = start;
-                span.end = end;
-                span.type = 'i';
-                spans.add(span);
-                Toast.makeText(getApplicationContext(), start + " " + end + " " + 'i', Toast.LENGTH_LONG).show();
                 str.setSpan(new StyleSpan(Typeface.ITALIC), start, end, 0);
                 et.setText(str, TextView.BufferType.SPANNABLE);
             }
         });
 
         /*
-        * This needs some adjusting to get the first bit to copy
+        * converts the current text to HTML and saves to a file that you can name
         * 
         * */
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 EditText et = (EditText) findViewById(R.id.textView);
                 SpannableString rough = new SpannableString(et.getText());
                 String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
                 HTML = "<html><body>" + htmlString + "</body></html>";
-                //et.setText(HTML);
 
-
-
-        /*
-        Comparator<ViewSpan> c = new Comparator<ViewSpan>() {
-                    @Override
-                    public int compare(ViewSpan item, ViewSpan t1) {
-                        if(item.start == t1.start){
-                            return 0;
-                        }else if(item.start > t1.start){
-                            return 1;
-                        }else {
-                            return -1;
-                        }
-                    }
-                };
-                EditText et = (EditText) findViewById(R.id.textView);
-                SpannableString rough =new SpannableString(et.getText());
-
-                
-                // saveable = new StringBuilder();
-                //ViewSpan temp = new ViewSpan();
-               //ArrayList<ViewSpan> vs = new ArrayList<>();
-                //saveable.append("");
-                final String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-                et.setText(htmlString, TextView.BufferType.SPANNABLE);
-*/
                 AlertDialog.Builder fileDialog = new AlertDialog.Builder(MainActivity.this);
                 View dialogView = getLayoutInflater().inflate(R.layout.filename_layout, null);
                 fileDialog.setView(dialogView);
@@ -217,22 +153,17 @@ public class MainActivity extends AppCompatActivity {
                 fileDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
-
                         shortFileName = editText.getText().toString().trim();
                         //Log.i("shortfile2",shortFileName);
                         if (shortFileName.matches("")) {
 
                             Toast.makeText(getApplicationContext(), "Please Try Again and Input A File Name", Toast.LENGTH_SHORT).show();
-
                         }
-
                         String fileName = shortFileName + ".html";
                         saveFile(fileName, HTML, path);
 
                     }
                 });
-
                 fileDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
@@ -242,63 +173,16 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-
                 fileDialog.create();
                 fileDialog.show();
-
-
-
-
-
-        /*
-                if(spans.size()==0){
-                    et.setText(rough);
-                }else{
-                    spans.sort(c);
-
-                    if(spans.get(0).start != 0) {
-                        temp.type = 'n';
-                        temp.start = 0;
-                        temp.end = spans.get(0).start-2;
-                        spans.add(temp);
-                        spans.sort(c);
-                    }
-
-                    for (int i = 0; i < spans.size() - 1; i++) {
-                        temp.start = spans.get(i).end + 1;
-                        temp.end = spans.get(i + 1).start-2;
-                        temp.type='n';
-                        vs.add(temp);
-
-                    }
-
-                    if(spans.get(spans.size()-1).end != rough.length()) {
-                        temp.type = 'n';
-                        temp.start = spans.get(spans.size()-1).end+1;
-                        temp.end = rough.length();
-                        vs.add(temp);
-                    }
-                    spans.addAll(vs);
-                    spans.sort(c);
-                    //now to copy words and whatnot
-
-                    for(int i =0;i<spans.size()-1;i++){
-                        if(spans.get(i).type == 'n'){
-                            saveable.append(rough.substring(spans.get(i).start,spans.get(i).end));
-                        }else {
-                            saveable.append("<"+spans.get(i).type+">"+rough.substring(spans.get(i).start,spans.get(i).end)+"</"+spans.get(i).type+">");
-                        }
-                    }
-
-                    et.setText(saveable.toString());
-                }
-                */
             }
         });
 
 
     }
-
+    /*
+    * Starts an intent to select an image from the gallery
+    * */
     public void loadImagefromGallery(View view) {
         // Create intent to Open Image applications like Gallery, Google Photos
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -306,7 +190,9 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
 
-
+    /*
+    * returns from the gallery and sets up the parser to extract text from the chosen image
+    * */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -346,10 +232,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    /*
+    * saves to a file named whatever you enter in the TextParser directory
+    * */
     public void saveFile(String HTMLfileName, String HTMLContentString, String PathName) {
-
-
         File file = new File(PathName, HTMLfileName);
         Log.i("filename", PathName + HTMLfileName);
 
@@ -375,13 +261,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+    /*
+    * inflater for the load menu
+    * */
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-
+    /*
+    * loads the selected file from the directory into a webview
+    * */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         {
@@ -409,11 +299,13 @@ public class MainActivity extends AppCompatActivity {
                             FileInputStream fin = new FileInputStream(fl);
                             String ret = convertStreamToString(fin);
                             //Make sure you close all streams.
+                            Toast.makeText(getApplicationContext(), ret, Toast.LENGTH_SHORT).show();
+
                             fin.close();
                             Intent intent = new Intent(getApplicationContext(), Web.class);
                             intent.putExtra("HTML", ret);
                             startActivity(intent);
-                           
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -429,7 +321,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    /*
+    * This gets our permissions
+    * */
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -443,6 +337,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    /*
+    * a helper funtion to convert a stream to a string
+    * */
     private String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
