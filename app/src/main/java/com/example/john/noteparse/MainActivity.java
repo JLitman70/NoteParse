@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -61,11 +62,17 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button highlight = findViewById(R.id.btn_highlight);
+
+
+        /*Button highlight = findViewById(R.id.btn_highlight);
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
         Button save = findViewById(R.id.btn_save);
-        Button web = findViewById(R.id.btn_web);
+        Button web = findViewById(R.id.btn_web);*/
+        com.github.clans.fab.FloatingActionButton bold = findViewById(R.id.bold);
+        com.github.clans.fab.FloatingActionButton highlight = findViewById(R.id.highlight);
+        com.github.clans.fab.FloatingActionButton italic = findViewById(R.id.italic);
+
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         * Creates the on click listener that converts the current text to html and opens it into a
         * web browser.
         * */
-        web.setOnClickListener(new View.OnClickListener() {
+        /*web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText et = (EditText) findViewById(R.id.textView);
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("HTML", HTML);
                 startActivity(intent);
             }
-        });
+        });*/
         /*
         * Highlights the currently selected text and saves it to a spannable string
         * */
@@ -134,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         * converts the current text to HTML and saves to a file that you can name
         * 
         * */
-        save.setOnClickListener(new View.OnClickListener() {
+        /*save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText et = (EditText) findViewById(R.id.textView);
@@ -176,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 fileDialog.create();
                 fileDialog.show();
             }
-        });
+        });*/
 
 
     }
@@ -275,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         {
-            //statements seem to be working, highscore is untested'ish' because i did not want to mess with the layout (as it appears blank)
+
             if(item.getItemId()== R.id.Load_File){
                 File fileDirectory = new File(path);
                 String[] listFiles = fileDirectory.list();
@@ -317,6 +324,62 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
+            else if (item.getItemId()== R.id.Save_File){
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough = new SpannableString(et.getText());
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                HTML = "<html><body>" + htmlString + "</body></html>";
+
+                AlertDialog.Builder fileDialog = new AlertDialog.Builder(MainActivity.this);
+                View dialogView = getLayoutInflater().inflate(R.layout.filename_layout, null);
+                fileDialog.setView(dialogView);
+                fileDialog.setTitle("Input File Name");
+                fileDialog.setCancelable(true);
+
+                final EditText editText = dialogView.findViewById(R.id.filename_et);
+
+                fileDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        shortFileName = editText.getText().toString().trim();
+                        //Log.i("shortfile2",shortFileName);
+                        if (shortFileName.matches("")) {
+
+                            Toast.makeText(getApplicationContext(), "Please Try Again and Input A File Name", Toast.LENGTH_SHORT).show();
+                        }
+                        String fileName = shortFileName + ".html";
+                        saveFile(fileName, HTML, path);
+
+                    }
+                });
+                fileDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+                        String fileName = shortFileName + ".html";
+                        saveFile(fileName, HTML, path);
+
+                    }
+                });
+                fileDialog.create();
+                fileDialog.show();
+            }
+            else if(item.getItemId() ==R.id.Gallery){
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                // Start the Intent
+                startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+            }
+            else if(item.getItemId()== R.id.Web){
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough = new SpannableString(et.getText());
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                HTML = "<html><body>" + htmlString + "</body></html>";
+                Intent intent = new Intent(getApplicationContext(), Web.class);
+                intent.putExtra("HTML", HTML);
+                startActivity(intent);
+
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }

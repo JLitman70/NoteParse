@@ -6,6 +6,18 @@
         <item android:id="@+id/Load_File"
         android:title="Load"
          />
+        <item android:id="@+id/Save_File"
+            android:title="Save File"
+            />
+
+        <item android:id="@+id/Gallery"
+            android:title="Gallery"
+            />
+
+        <item android:id="@+id/Web"
+            android:title="Web"
+            />
+
 
 
 </menu>
