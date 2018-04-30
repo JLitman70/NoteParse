@@ -28,11 +28,10 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-import com.example.john.noteparse.R;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
-
+import com.example.john.noteparse.R;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -49,13 +48,14 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button load = findViewById(R.id.fab_load);
+        Button load = findViewById(R.id.btn_load);
         Button highlight = findViewById(R.id.btn_highlight);
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
         Button save = findViewById(R.id.btn_save);
-        Button web = findViewById(R.id.btn_web);
+        //Button web = findViewById(R.id.btn_web);
 
+        /*
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        */
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
