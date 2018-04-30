@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 import com.example.john.noteparse.R;
 import com.google.android.gms.vision.Frame;
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button load = findViewById(R.id.btn_load);
+        Button load = findViewById(R.id.fab_load);
         Button highlight = findViewById(R.id.btn_highlight);
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
