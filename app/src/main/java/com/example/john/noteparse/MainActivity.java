@@ -337,14 +337,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void saveFile(String HTMLfileName, String HTMLContentString) {
 
-        String path = Environment.getExternalStorageDirectory().getPath();
-
+        String path = Environment.getExternalStorageDirectory().getPath()+"/TextParserFolder";
         File file = new File(path, HTMLfileName);
-
         Log.i("filename", path + HTMLfileName);
+
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.i("working", "we are into permission check");
+            File directory = new File(path);
+            if (! directory.exists()){
+                directory.mkdirs();
+            }
+
             try {
                 FileOutputStream out = new FileOutputStream(file);
                 byte[] data = HTMLContentString.getBytes();
