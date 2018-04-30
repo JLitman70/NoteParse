@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     private String shortFileName = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final Context context = this;
@@ -71,16 +73,18 @@ public class MainActivity extends AppCompatActivity {
         Button save = findViewById(R.id.btn_save);
         Button web = findViewById(R.id.btn_web);
 
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
 
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText et = (EditText) findViewById(R.id.textView);
-                SpannableString rough =new SpannableString(et.getText());
+                SpannableString rough = new SpannableString(et.getText());
                 String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-                HTML = "<html><body>"+htmlString+"</body></html>";
+                HTML = "<html><body>" + htmlString + "</body></html>";
                 Intent intent = new Intent(context, Web.class);
-                intent.putExtra("HTML",HTML);
+                intent.putExtra("HTML", HTML);
                 startActivity(intent);
             }
         });
@@ -96,14 +100,13 @@ public class MainActivity extends AppCompatActivity {
                 int end = et.getSelectionEnd();
 
                 ViewSpan span = new ViewSpan();
-                span.start=start;
+                span.start = start;
                 span.end = end;
                 span.type = 'h';
                 spans.add(span);
-                Toast.makeText(getApplicationContext(), start+" "+end + " "+'h', Toast.LENGTH_LONG)
-                        .show();
+                Toast.makeText(getApplicationContext(), start + " " + end + " " + 'h', Toast.LENGTH_LONG).show();
 
-                str.setSpan(new BackgroundColorSpan(Color.YELLOW),start,end,0);
+                str.setSpan(new BackgroundColorSpan(Color.YELLOW), start, end, 0);
                 et.setText(str, TextView.BufferType.SPANNABLE);
 
 
@@ -119,13 +122,12 @@ public class MainActivity extends AppCompatActivity {
                 int start = et.getSelectionStart();
                 int end = et.getSelectionEnd();
                 ViewSpan span = new ViewSpan();
-                span.start=start;
+                span.start = start;
                 span.end = end;
-                span.type ='b';
+                span.type = 'b';
                 spans.add(span);
-                Toast.makeText(getApplicationContext(), start+" "+end + " "+'b', Toast.LENGTH_LONG)
-                        .show();
-                str.setSpan(new StyleSpan(Typeface.BOLD),start,end,0);
+                Toast.makeText(getApplicationContext(), start + " " + end + " " + 'b', Toast.LENGTH_LONG).show();
+                str.setSpan(new StyleSpan(Typeface.BOLD), start, end, 0);
 
                 et.setText(str, TextView.BufferType.SPANNABLE);
             }
@@ -142,13 +144,12 @@ public class MainActivity extends AppCompatActivity {
 
 
                 ViewSpan span = new ViewSpan();
-                span.start=start;
+                span.start = start;
                 span.end = end;
-                span.type ='i';
+                span.type = 'i';
                 spans.add(span);
-                Toast.makeText(getApplicationContext(), start+" "+end + " "+'i', Toast.LENGTH_LONG)
-                        .show();
-                str.setSpan(new StyleSpan(Typeface.ITALIC),start,end,0);
+                Toast.makeText(getApplicationContext(), start + " " + end + " " + 'i', Toast.LENGTH_LONG).show();
+                str.setSpan(new StyleSpan(Typeface.ITALIC), start, end, 0);
                 et.setText(str, TextView.BufferType.SPANNABLE);
             }
         });
@@ -162,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 EditText et = (EditText) findViewById(R.id.textView);
-                SpannableString rough =new SpannableString(et.getText());
+                SpannableString rough = new SpannableString(et.getText());
                 String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-                HTML = "<html><body>"+htmlString+"</body></html>";
+                HTML = "<html><body>" + htmlString + "</body></html>";
                 //et.setText(HTML);
 
 
@@ -208,27 +209,27 @@ public class MainActivity extends AppCompatActivity {
 
                         shortFileName = editText.getText().toString().trim();
                         //Log.i("shortfile2",shortFileName);
-                        if(shortFileName.matches("")) {
+                        if (shortFileName.matches("")) {
 
-                            Toast.makeText(getApplicationContext(),"Please Try Again and Input A File Name",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Please Try Again and Input A File Name", Toast.LENGTH_SHORT).show();
 
                         }
 
                         String fileName = shortFileName + ".html";
-                        saveFile(fileName,HTML);
+                        saveFile(fileName, HTML);
 
                     }
                 });
 
                 fileDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialogInterface) {
-                                shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
-                                String fileName = shortFileName + ".html";
-                                saveFile(fileName,HTML);
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+                        String fileName = shortFileName + ".html";
+                        saveFile(fileName, HTML);
 
-                            }
-                        });
+                    }
+                });
 
                 fileDialog.create();
                 fileDialog.show();
@@ -285,10 +286,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
     public void loadImagefromGallery(View view) {
         // Create intent to Open Image applications like Gallery, Google Photos
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         // Start the Intent
         startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
@@ -299,8 +300,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         try {
             // When an Image is picked
-            if (requestCode == RESULT_LOAD_IMG
-                    && data != null) {
+            if (requestCode == RESULT_LOAD_IMG && data != null) {
                 // Get the Image from data
 
                 Uri selectedImage = data.getData();
@@ -315,30 +315,27 @@ public class MainActivity extends AppCompatActivity {
                 fb.setBitmap(bitmap);
                 Frame frame = fb.build();
                 //detects textdata from the frame and stuffs it in the sparse array, then puts it in a string
-              try {
-                  SparseArray<TextBlock> textBlocks = textDetector.detect(frame);
-                  String s = textBlocks.get(0).getValue();
-                  //creating a testview to show the test
-                  EditText et = (EditText) findViewById(R.id.textView);
-                  et.setText(s);
-              }catch (Exception e){
-                  Toast.makeText(this, "Text Detector Failed to Detect Text", Toast.LENGTH_LONG)
-                          .show();
-              }
+                try {
+                    SparseArray<TextBlock> textBlocks = textDetector.detect(frame);
+                    String s = textBlocks.get(0).getValue();
+                    //creating a testview to show the test
+                    EditText et = (EditText) findViewById(R.id.textView);
+                    et.setText(s);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Text Detector Failed to Detect Text", Toast.LENGTH_LONG).show();
+                }
 
             } else {
-                Toast.makeText(this, "You haven't picked Image",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
-                    .show();
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
         }
 
     }
 
 
-    public void saveFile(String HTMLfileName, String HTMLContentString){
+    public void saveFile(String HTMLfileName, String HTMLContentString) {
 
         String path = Environment.getExternalStorageDirectory().getPath();
 
@@ -359,10 +356,22 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+       }
 
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i("request", String.valueOf(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)));
+                } else {
 
+                }
+                return;
+            }
+        }
+    }
 }
