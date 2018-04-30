@@ -1,7 +1,11 @@
 package com.example.john.noteparse;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,24 +13,27 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.format.DateFormat;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
+
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
@@ -34,6 +41,10 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import com.example.john.noteparse.R;
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -47,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     String HTML;
     ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
+    private String shortFileName = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final Context context = this;
@@ -170,6 +182,62 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 };
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough =new SpannableString(et.getText());
+
+                
+                // saveable = new StringBuilder();
+                //ViewSpan temp = new ViewSpan();
+               //ArrayList<ViewSpan> vs = new ArrayList<>();
+                //saveable.append("");
+                final String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                et.setText(htmlString, TextView.BufferType.SPANNABLE);
+
+                AlertDialog.Builder fileDialog = new AlertDialog.Builder(MainActivity.this);
+                View dialogView = getLayoutInflater().inflate(R.layout.filename_layout, null);
+                fileDialog.setView(dialogView);
+                fileDialog.setTitle("Input File Name");
+                fileDialog.setCancelable(true);
+
+                final EditText editText = dialogView.findViewById(R.id.filename_et);
+
+                fileDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                        shortFileName = editText.getText().toString().trim();
+                        //Log.i("shortfile2",shortFileName);
+                        if(shortFileName.matches("")) {
+
+                            Toast.makeText(getApplicationContext(),"Please Try Again and Input A File Name",Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        String fileName = shortFileName + ".html";
+                        saveFile(fileName,htmlString);
+
+                    }
+                });
+
+                fileDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                shortFileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+                                String fileName = shortFileName + ".html";
+                                saveFile(fileName,htmlString);
+
+                            }
+                        });
+
+                fileDialog.create();
+                fileDialog.show();
+
+
+
+
+
+        /*
                 if(spans.size()==0){
                     et.setText(rough);
                 }else{
@@ -268,5 +336,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
+    public void saveFile(String HTMLfileName, String HTMLContentString){
+
+        String path = Environment.getExternalStorageDirectory().getPath();
+
+        File file = new File(path, HTMLfileName);
+
+        Log.i("filename", path + HTMLfileName);
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            Log.i("working", "we are into permission check");
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                byte[] data = HTMLContentString.getBytes();
+                out.write(data);
+                out.close();
+                Log.i("fileName", "File Save : " + file.getPath());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
 
 }
