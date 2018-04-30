@@ -15,7 +15,6 @@
         android:layout_marginTop="108dp"
         android:backgroundTint="@android:color/transparent"
         android:inputType="none"
-        android:text="TextView"
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

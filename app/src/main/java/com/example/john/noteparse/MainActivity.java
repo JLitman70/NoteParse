@@ -34,13 +34,17 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import com.example.john.noteparse.R;
 import org.w3c.dom.Text;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Scanner;
 
 import static android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
 
 public class MainActivity extends AppCompatActivity {
-    String back_s;
+    String HTML;
     ArrayList<ViewSpan> spans = new ArrayList<>();
     private static int RESULT_LOAD_IMG = 1;
     @Override
@@ -53,17 +57,22 @@ public class MainActivity extends AppCompatActivity {
         Button bold = findViewById(R.id.btn_bold);
         Button italic = findViewById(R.id.btn_italic);
         Button save = findViewById(R.id.btn_save);
-        //Button web = findViewById(R.id.btn_web);
+        Button web = findViewById(R.id.btn_web);
 
-        /*
+
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough =new SpannableString(et.getText());
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                HTML = "<html><body>"+htmlString+"</body></html>";
                 Intent intent = new Intent(context, WebViewActivity.class);
+                intent.putExtra("HTML",HTML);
                 startActivity(intent);
             }
         });
-        */
+
         highlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,7 +148,17 @@ public class MainActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Comparator<ViewSpan> c = new Comparator<ViewSpan>() {
+
+                EditText et = (EditText) findViewById(R.id.textView);
+                SpannableString rough =new SpannableString(et.getText());
+                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                HTML = "<html><body>"+htmlString+"</body></html>";
+                et.setText(HTML);
+
+
+
+        /*
+        Comparator<ViewSpan> c = new Comparator<ViewSpan>() {
                     @Override
                     public int compare(ViewSpan item, ViewSpan t1) {
                         if(item.start == t1.start){
@@ -151,17 +170,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 };
-                EditText et = (EditText) findViewById(R.id.textView);
-                SpannableString rough =new SpannableString(et.getText());
-
-                
-                // saveable = new StringBuilder();
-                //ViewSpan temp = new ViewSpan();
-               //ArrayList<ViewSpan> vs = new ArrayList<>();
-                //saveable.append("");
-                String htmlString = Html.toHtml(rough, TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-                et.setText(htmlString, TextView.BufferType.SPANNABLE);
-        /*
                 if(spans.size()==0){
                     et.setText(rough);
                 }else{
@@ -242,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
               try {
                   SparseArray<TextBlock> textBlocks = textDetector.detect(frame);
                   String s = textBlocks.get(0).getValue();
-                  back_s = s;
                   //creating a testview to show the test
                   EditText et = (EditText) findViewById(R.id.textView);
                   et.setText(s);
